@@ -1,7 +1,7 @@
 # Windows Performance & Optimization Tweaks
 ### 🚀 Created by FAHIM
 
-A highly streamlined collection of administrative batch (`.bat`) scripts designed to maximize network throughput, minimize system latency, and strip away sluggish Windows UI animations without sacrificing modern usability.
+A highly streamlined collection of administrative batch (`.bat`) scripts designed to maximize network throughput, minimize system latency, and strip away sluggish Windows UI animations without sacrificing essential visual clarity or accessibility.
 
 ---
 
@@ -28,6 +28,30 @@ Fine-tunes background scheduling priorities to feed resources directly to active
 * Disables background Windows Telemetry tracking and diagnostic data uploads.
 * Shuts down Windows Hibernation (`powercfg -h off`) to eliminate constant background disk writes.
 * Drastically reduces hardware polling input lag (`MouseHoverTime` and keyboard delays).
+
+---
+
+## 🌐 DNS Optimization Quick Tips
+
+DNS resolution can significantly impact network responsiveness. Consider these quick improvements:
+
+* **Use a Public DNS Service:**
+  * **Cloudflare:** `1.1.1.1` and `1.0.0.1` (fastest, privacy-focused)
+  * **Google:** `8.8.8.8` and `8.8.4.4` (reliable, widely-used)
+  * **Quad9:** `9.9.9.9` (security-focused, blocks malware)
+
+* **Change DNS via Command Prompt (Admin):**
+  ```
+  netsh interface ip set dns name="Ethernet" static 1.1.1.1
+  netsh interface ip add dns name="Ethernet" 1.0.0.1
+  ```
+
+* **Flush DNS Cache:**
+  ```
+  ipconfig /flushdns
+  ```
+
+* **Why it matters:** A fast DNS service reduces domain lookup latency, improving browsing speed and online game responsiveness.
 
 ---
 
