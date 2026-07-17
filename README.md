@@ -83,6 +83,18 @@ Stop-Service -Name "ServiceName"
 
 ## 🛠️ How to Use
 
+0. Clone the repository
+
+Clone the repository (HTTPS):
+```
+git clone https://github.com/dev-fahim-code/windows-performance-tweaks.git
+```
+
+Or using SSH:
+```
+git clone git@github.com:dev-fahim-code:windows-performance-tweaks.git
+```
+
 1. Download `.bat` files from repository
 2. Right-click → Run as administrator
 3. Restart computer to apply changes
