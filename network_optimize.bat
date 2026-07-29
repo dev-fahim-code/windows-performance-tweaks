@@ -1,22 +1,32 @@
 @echo off
-:: Check for administrative privileges
+color 0C
+setlocal enabledelayedexpansion
+
+:: --------------------------------------------------------
+:: SELF-ELEVATION: relaunch with a UAC prompt if not admin
+:: --------------------------------------------------------
 net session >nul 2>&1
-if %errorLevel% == 0 (
-    echo Administrative privileges confirmed. Starting optimization...
-    echo.
-) else (
-    echo #######################################################
-    echo ERROR: You must run this script as an ADMINISTRATOR!
-    echo Right-click the file and select 'Run as administrator'.
-    echo #######################################################
-    pause
+if %errorLevel% neq 0 (
+    echo Requesting administrator permission...
+    powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /b
 )
 
 :: --------------------------------------------------------
+:: BANNER (centered, light red)
+:: --------------------------------------------------------
+call :center "======================================"
+call :center "        Dev-Fahim_Code"
+call :center "github.com/dev-fahim-code"
+call :center "======================================"
+echo.
+call :center "Administrative privileges confirmed. Starting optimization..."
+echo.
+
+:: --------------------------------------------------------
 :: 1. REALTEK ETHERNET OPTIMIZATION
 :: --------------------------------------------------------
-echo Configuring Realtek Ethernet Adapter...
+call :center "Configuring Realtek Ethernet Adapter..."
 
 :: Force 1.0 Gbps Full Duplex
 powershell -Command "Set-NetAdapterAdvancedProperty -Name '*' -DisplayName 'Speed & Duplex' -DisplayValue '1.0 Gbps Full Duplex' -ErrorAction SilentlyContinue"
@@ -38,13 +48,13 @@ powershell -Command "Set-NetAdapterAdvancedProperty -Name '*' -DisplayName 'TCP 
 powershell -Command "Set-NetAdapterAdvancedProperty -Name '*' -DisplayName 'UDP Checksum Offload (IPv4)' -DisplayValue 'Rx & Tx Enabled' -ErrorAction SilentlyContinue"
 powershell -Command "Set-NetAdapterAdvancedProperty -Name '*' -DisplayName 'Large Send Offload v2 (IPv4)' -DisplayValue 'Enabled' -ErrorAction SilentlyContinue"
 
-echo Realtek settings applied.
+call :center "Realtek settings applied."
 echo.
 
 :: --------------------------------------------------------
 :: 2. INTEL WI-FI 6 OPTIMIZATION
 :: --------------------------------------------------------
-echo Configuring Intel Wi-Fi 6 Adapter...
+call :center "Configuring Intel Wi-Fi 6 Adapter..."
 
 :: Maximize Throughput Standards & Channels
 powershell -Command "Set-NetAdapterAdvancedProperty -Name '*' -DisplayName '802.11ax Wireless Mode' -DisplayValue '802.11ax' -ErrorAction SilentlyContinue"
@@ -60,25 +70,52 @@ powershell -Command "Set-NetAdapterAdvancedProperty -Name '*' -DisplayName 'MIMO
 powershell -Command "Set-NetAdapterAdvancedProperty -Name '*' -DisplayName 'Packet Coalescing' -DisplayValue 'Disabled' -ErrorAction SilentlyContinue"
 powershell -Command "Set-NetAdapterAdvancedProperty -Name '*' -DisplayName 'Throughput Booster' -DisplayValue 'Disabled' -ErrorAction SilentlyContinue"
 
-echo Intel Wi-Fi settings applied.
+call :center "Intel Wi-Fi settings applied."
 echo.
 
 :: --------------------------------------------------------
 :: 3. WINDOWS WIRELESS POWER PLAN OPTIMIZATION
 :: --------------------------------------------------------
-echo Setting Windows Wireless Adapter to Maximum Performance...
+call :center "Setting Windows Wireless Adapter to Maximum Performance..."
 
-:: Updates the active power scheme's wireless subkey to Maximum Performance (000) for both AC and DC power
-powershell -Command "$activePlan = (powercfg /getactivescheme).Split()[3]; powercfg /setacvalueindex $activePlan 19cbb8fa-0579-4c8e-8019-d483c57406de 12bbebe6-58d6-4636-95bb-3217ef867c1a 0"
-powershell -Command "$activePlan = (powercfg /getactivescheme).Split()[3]; powercfg /setdcvalueindex $activePlan 19cbb8fa-0579-4c8e-8019-d483c57406de 12bbebe6-58d6-4636-95bb-3217ef867c1a 0"
-:: Apply changes immediately
-powercfg /setactivescheme $activePlan
+:: FIX: $activePlan was a PowerShell-local variable that did not persist
+:: back to the batch file, so the final "powercfg /setactivescheme $activePlan"
+:: line ran literally in cmd.exe and failed. Both value updates and the
+:: re-activation now happen inside a single PowerShell session so the
+:: variable stays alive for all three commands.
+powershell -Command "$activePlan = (powercfg /getactivescheme).Split()[3]; powercfg /setacvalueindex $activePlan 19cbb8fa-0579-4c8e-8019-d483c57406de 12bbebe6-58d6-4636-95bb-3217ef867c1a 0; powercfg /setdcvalueindex $activePlan 19cbb8fa-0579-4c8e-8019-d483c57406de 12bbebe6-58d6-4636-95bb-3217ef867c1a 0; powercfg /setactivescheme $activePlan"
 
-echo Windows Power settings applied.
+call :center "Windows Power settings applied."
 echo.
-echo =======================================================
-echo OPTIMIZATION COMPLETE!
-echo Note: Network adapters may briefly reset to apply changes.
-echo It is highly recommended to restart your PC.
-echo =======================================================
+call :center "======================================================="
+call :center "OPTIMIZATION COMPLETE!"
+call :center "Note: Network adapters may briefly reset to apply changes."
+call :center "It is highly recommended to restart your PC."
+call :center "======================================================="
+echo.
+call :center "Script by Dev-Fahim_Code - github.com/dev-fahim-code"
 pause
+exit /b
+
+:: --------------------------------------------------------
+:: Helper: center a line of text based on console width
+:: --------------------------------------------------------
+:center
+setlocal
+set "str=%~1"
+set "cols=80"
+for /f "tokens=2" %%a in ('mode con ^| findstr /R "Columns"') do set "cols=%%a"
+set "len=0"
+:strlen_loop
+if defined str (
+    set "str=!str:~1!"
+    set /a len+=1
+    goto strlen_loop
+)
+set "pad=0"
+set /a pad=(cols-len)/2
+if %pad% lss 0 set "pad=0"
+set "spaces="
+for /l %%i in (1,1,%pad%) do set "spaces=!spaces! "
+endlocal & echo(%spaces%%~1
+goto :eof
