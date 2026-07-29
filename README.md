@@ -1,109 +1,79 @@
-# Windows Performance & Optimization Tweaks
+# Windows Performance Tweaks
 
-A streamlined collection of administrative batch scripts to maximize network speed, minimize system latency, and improve overall Windows performance.
+A collection of batch scripts to optimize Windows for **network throughput, visual responsiveness, and overall system performance**. Built for gamers and power users who want a fast, no-fluff Windows setup.
 
----
-
-## 📂 Scripts Overview
-
-### 1. `network_optimize.bat`
-**Purpose:** Optimize network and Wi-Fi speeds
-- Forces Gigabit speeds on Ethernet adapters
-- Enables Wi-Fi 6 mode for Intel adapters
-- Disables power-saving features that throttle network
-- Increases buffer sizes for better packet handling
-
-### 2. `max_perf_visuals.bat`
-**Purpose:** Remove UI lag and animations
-- Disables window animations and transitions
-- Removes visual effects consuming CPU
-- Keeps 3 essential effects: font smoothing, thumbnails, window shadows
-- Enables visual performance mode for faster UI response
-
-### 3. `system_latency_perf.bat`
-**Purpose:** Reduce CPU latency and input lag
-- Prioritizes active applications for CPU scheduling
-- Disables Windows Telemetry and diagnostics
-- Disables hibernation mode
-- Reduces mouse and keyboard input delays
-- Optimizes multimedia service priorities
+By **Dev-Fahim_Code** — [github.com/dev-fahim-code](https://github.com/dev-fahim-code)
 
 ---
 
-## 🌐 DNS Optimization
+## ⚠️ Disclaimer
 
-Fast DNS improves browsing and gaming responsiveness.
+These scripts modify system-level registry keys, network adapter settings, and power plans. Use at your own risk.
 
-**Recommended DNS Services:**
-- **Cloudflare:** `1.1.1.1` (fastest, privacy-focused)
-- **Google:** `8.8.8.8` (reliable)
-- **Quad9:** `9.9.9.9` (security-focused)
-
-**Set DNS (Admin Command Prompt):**
-```
-netsh interface ip set dns name="Ethernet" static 1.1.1.1
-ipconfig /flushdns
-```
+- Create a **System Restore Point** before running any of these.
+- Review each script before running it — know what it changes.
+- Tested on Windows 10/11. Effects may vary depending on your hardware and drivers.
 
 ---
 
-## 🔧 Disable Non-Microsoft Services
+## Scripts
 
-Remove unnecessary background services to free up system resources.
+### 1. `network-optimizer.bat`
+Tunes network adapters for maximum throughput and lowest latency.
 
-**Safe to Disable:**
-- Printer services (HP, Canon, Epson)
-- Adobe Update Services
-- OneDrive (if using alternatives)
-- Cortana/Search Indexing
-- GPU Telemetry (Nvidia/AMD)
-- OEM Bloatware services
+**What it does:**
+- **Realtek Ethernet**: forces 1.0 Gbps full duplex, disables all power-saving features (Energy-Efficient Ethernet, Green Ethernet, Gigabit Lite), maximizes receive/transmit buffers, enables hardware checksum/offload features.
+- **Intel Wi-Fi 6**: forces 802.11ax mode, sets lowest roaming aggressiveness, maximizes transmit power, disables MIMO power saving and packet coalescing.
+- **Windows Power Plan**: sets the wireless adapter power setting to Maximum Performance on both AC and battery.
 
-**How to Disable (Services.msc):**
-1. Press `Win + R` → type `services.msc`
-2. Right-click service → Properties
-3. Set Startup type to `Disabled`
-4. Click Stop → Apply → OK
-
-**Command (Admin PowerShell):**
-```powershell
-Set-Service -Name "ServiceName" -StartupType Disabled
-Stop-Service -Name "ServiceName"
-```
-
-**⚠️ DO NOT disable:**
-- Windows Update (`wuauserv`)
-- Windows Defender (`WinDefend`)
-- Network Discovery (`FDResPub`)
-- Windows Event Log (`eventlog`)
-- Plug and Play (`PlugPlay`)
-- Device Setup Manager (`DeviceInstall`)
+> Note: Setting names/values are driver-specific. If your adapter doesn't expose a particular property, that step is silently skipped — this is expected and not an error.
 
 ---
 
-## 🛠️ How to Use
+### 2. `appearance-optimizer.bat`
+Strips Windows visual effects down to a lean, high-performance UI.
 
-0. Clone the repository
-
-Clone the repository (HTTPS):
-```
-git clone https://github.com/dev-fahim-code/windows-performance-tweaks.git
-```
-
-Or using SSH:
-```
-git clone git@github.com:dev-fahim-code:windows-performance-tweaks.git
-```
-
-1. Download `.bat` files from repository
-2. Right-click → Run as administrator
-3. Restart computer to apply changes
-
-> **Disclaimer:** Scripts modify network drivers and Windows registry. Administrator privileges required.
+**What it does:**
+- Sets Visual Effects to **Custom**.
+- Disables window/taskbar animations, menu fading, list-view fade/shadow, and scrolling animations.
+- Keeps only three visual effects enabled:
+  - Font smoothing (ClearType)
+  - Thumbnails instead of generic icons
+  - Window drop shadows
+- Restarts Windows Explorer automatically to apply changes instantly — no reboot required.
 
 ---
 
-## 📜 License
-MIT License — Modify and share freely
+### 3. `performance-optimizer.bat`
+General system-level performance tweaks.
 
-**Project Maintained and Optimized by:** [FAHIM](https://github.com/dev-fahim-code)
+**What it does:**
+- **Disables telemetry**: turns off `AllowTelemetry` and disables the `DiagTrack` service, reducing background CPU/network usage.
+- **CPU task scheduling**: sets `SystemResponsiveness` to 0 and raises GPU/CPU priority for games, so foreground apps get more resources.
+- **Disables hibernation**: frees disk space equal to your RAM size and stops related background disk writes.
+- **Reduces input delay**: lowers mouse hover time and removes keyboard acceptance delay.
+
+> A restart is recommended after running this script for all changes to take full effect.
+
+---
+
+## Usage
+
+1. Download the `.bat` file you want to run.
+2. Double-click it — each script **automatically requests administrator permission** via a UAC prompt. You don't need to manually right-click → "Run as administrator."
+3. Click **Yes** on the UAC prompt.
+4. Wait for the script to finish and follow any on-screen instructions (some scripts recommend a restart).
+
+---
+
+## Requirements
+
+- Windows 10 or Windows 11
+- Administrator access (the script will prompt for this automatically)
+- PowerShell available on the system (included by default on all supported Windows versions)
+
+---
+
+## License
+
+Free to use and modify. Attribution to **Dev-Fahim_Code** appreciated but not required.
