@@ -108,5 +108,3 @@ Free to use and modify. Attribution to **Dev-Fahim_Code** appreciated but not re
 GitHub: [dev-fahim-code](https://github.com/dev-fahim-code)
 
 ---
-
-(If you'd like, I can commit this improved README to the repository now and open a PR or push directly to the default branch.)
