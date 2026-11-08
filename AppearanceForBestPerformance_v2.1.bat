@@ -11,15 +11,23 @@ title Appearance for Best Performance v2.1
 ::  - Restore option (menu 2)
 ::  - Backups are verified before anything is changed
 ::  - Timestamped backup folders, newest listed first
-::  - Backup folder falls back to %USERPROFILE% if the
-::    script folder is read-only
+::  - Backups go to Desktop\AppearanceBackups, with a
+::    fallback to %LOCALAPPDATA%\AppearanceBackups
 ::  - Sign-out option (some settings need it)
 ::  - Menu colour resets after every action
 :: ==========================================
 
-:: Backup locations (script folder first, user profile as fallback)
-set "ROOT1=%~dp0Backups"
-set "ROOT2=%USERPROFILE%\AppearanceBackups"
+:: Find the real Desktop path (handles OneDrive-redirected Desktops)
+set "DESKTOPDIR="
+for /f "usebackq delims=" %%d in (`powershell -nologo -noprofile -command "[Environment]::GetFolderPath('Desktop')" 2^>nul`) do set "DESKTOPDIR=%%d"
+if not defined DESKTOPDIR set "DESKTOPDIR=%USERPROFILE%\Desktop"
+
+:: Backup locations: Desktop first, then a safe fallback.
+:: ROOT3 and ROOT4 are older locations, only used to list old backups.
+set "ROOT1=%DESKTOPDIR%\AppearanceBackups"
+set "ROOT2=%LOCALAPPDATA%\AppearanceBackups"
+set "ROOT3=%~dp0Backups"
+set "ROOT4=%USERPROFILE%\AppearanceBackups"
 
 :MENU
 color 0B
@@ -177,7 +185,7 @@ echo ==========================================
 echo.
 
 set "COUNT=0"
-for %%R in ("%ROOT1%" "%ROOT2%") do (
+for %%R in ("%ROOT1%" "%ROOT2%" "%ROOT3%" "%ROOT4%") do (
     if exist "%%~R\" (
         for /f "delims=" %%D in ('dir /b /ad /o-n "%%~R\Backup_*" 2^>nul') do (
             set /a COUNT+=1
